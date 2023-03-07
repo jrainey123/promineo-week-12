@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>After School Enrichment Program</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+    <!--Bootstrap version 5.2.3-->
+</head>
+
+<body class="container" style="background-image:linear-gradient(lightblue, white, lightgreen)"> <!--  Bootstrap class -->
+  <div id="new-session" class="container mt-4 p-5 bg-success text-white rounded"> <!--setting up form for adding New Sessions. id assigned for future reference in JS code. class for styling is from Bootstrap. I tried Jumbotron but it's no longer used in Version 5. Alternative works great as well.-->
+    <h2>New Session</h2>
+    <input type="text" id="new-session-name" class="form-control"><br> 
+    <button id="create-new-session" class="btn btn-dark form-control">Create</button> <!--2 classes used here no commas-->
+  </div> 
+  <div id="app"> <!--store all the new sessions from API or other source TBD-->
+  </div> 
+
+  <script src="node_modules/jquery/dist/jquery.js"></script>
+  <script src="school.js"></script> <!--VERY IMPORTANT to place this line AFTER the jquery line.-->
+  <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    
+</body>
+</html>
