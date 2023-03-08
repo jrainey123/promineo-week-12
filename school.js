@@ -1,7 +1,14 @@
-//add functional code
-//classes to represent Sessions and their Sections in the After School Enrichment Program.
-//class for Session Service to enable sending AJAX httpRequests to pre-existing API data
-//class to manage the DOM
+
+//Week 12 Coding Assignment
+// [x] Create a full CRUD application of your choice using either an API or local Array.
+// [x] Use an existing API with AJAX to interact with it. 
+// [NA] If you do not use an API, store the entities you will create, read, update, and delete in an array.
+// [x] Use a form to post new entities.
+// [x] Build a way for users to update or delete entities.
+// [x] Use Bootstrap and CSS to style your project.
+// Project is an After School Enrichment Program
+// Sessions for the program will be added including name, day, and size limit.
+// In each of the sessions students will be added including first name, last name, and grade level.
 
 class Session{
     constructor(name, day, sizeLimit){
@@ -12,26 +19,26 @@ class Session{
     }
 
     //method to add students to the array declared in this Session class
-    addStudent(firstName, lastName, gradeLevel, parentPermission){
-        this.students.push(new Student(firstName, lastName, gradeLevel, parentPermission));
+
+    addStudent(firstName, lastName, gradeLevel){
+        this.students.push(new Student(firstName, lastName, gradeLevel));
     }
 } //end Session class
 
 class Student{
-    constructor(firstName, lastName, gradeLevel, parentPermission){
+    constructor(firstName, lastName, gradeLevel){
         this.firstName=firstName;
         this.lastName=lastName;
         this.gradeLevel=gradeLevel;
-        this.parentPermission=parentPermission;
     }
 } //end Student class
 
-//create the Service how to send the http requests.
+//create the Service - how to send the http requests.
 class SessionService{
     static url='https://640486a73bdc59fa8f3ad6f4.mockapi.io/School_Sessions_API/sessions';
     
     static getAllSessions() {
-        return $.get(this.url); //jquery GET
+        return $.get(this.url); //jquery GET = Read (C R U D)
     }
     
     static getSession(id){
@@ -39,23 +46,23 @@ class SessionService{
     }
 
     static createSession(session){
-        return $.post(this.url, session);
+        return $.post(this.url, session); //jquery POST = Create (C R U D)
     }
 
     static updateSession(session){
         return $.ajax({ 
-            url: this.url + `/${session._id}`, //_id is ID value automatically assigned by the database
+            url: this.url + `/${session._id}`, //_id is ID value automatically assigned by the API
             dataType: 'json',
             data: JSON.stringify(session),
             contentType: 'application/json',
-            type: 'PUT'
+            type: 'PUT' //jquery ajax PUT = Update (C R U D)
         });
     }
 
     static deleteSession(id){
         return $.ajax({
             url: this.url + `/${id}`,
-            type: 'DELETE'
+            type: 'DELETE' //jquery ajax DELETE = Delete (C R U D)
         });
     }
 } //end SessionService class
@@ -94,7 +101,7 @@ class DOMManager{
       console.log(this.sessions);
       console.log(session);
         if (session._id == id) {
-            session.students.push(new Student($(`#${session._id}-first-name`).val(), $(`#${session._id}-last-name`).val(), $(`#${session._id}-grade-level`).val(), $(`#${session._id}-parent-permission`).val()));
+            session.students.push(new Student($(`#${session._id}-first-name`).val(), $(`#${session._id}-last-name`).val(), $(`#${session._id}-grade-level`).val()));
             console.log(session.students);
             SessionService.updateSession(session)
             .then(()=> {
@@ -105,34 +112,35 @@ class DOMManager{
     } 
   }
 
-  static deleteStudent(sessionId, studentId){
+  //static deleteStudent(sessionId, studentId){  There is no need for the studentId. updated code in line below.
+    static deleteStudent(sessionId){
     for (let session of this.sessions){
       if (session._id == sessionId) {
         for (let student of session.students){
-            if (student._id == studentId){
+            //if (student._id == studentId){  There is no need for the studentId. deleted this if statement.
                 session.students.splice(session.students.indexOf(student), 1);
                 SessionService.updateSession(session)
                 .then(()=>{
                     return SessionService.getAllSessions();
                 })
                 .then((sessions)=>this.render(sessions));
-                } //end inner if 
+               // } //end inner if - deleted/commented out
             } //end inner for loop
         } //end outer if
       } //end outer for loop
     }//end static
-
  
   static render(sessions){
     this.sessions=sessions;
     $('#app').empty(); //finds the app id in html . empty clears every time before app is rerendered.
     for (let session of sessions) { //for loop to render each session
+      console.log(session); //for troubleshooting. not needed for app to function.
         $('#app').prepend( //use prepend so newest one shows up on top
         //write html in javascript. use template literal ``
         //div card body for inputs of students in a session 
         `<div id="${session._id}" class="card">
             <div class="card-header">
-             <h2>${session.name}</h2>
+             <h2>${session.name} on ${session.day} - Size Limit: ${session.sizeLimit}</h2>  
              <button class="btn btn-danger" onclick="DOMManager.deleteSession('${session._id}')">Delete</button> 
             </div>
             <div class="card-body">
@@ -147,10 +155,7 @@ class DOMManager{
                <div class="col-sm">
                 <input type="text" id="${session._id}-grade-level" class="form-control" placeholder="Student Grade Level">
                </div>
-               <div class="col-sm">
-                <input type="text" id="${session._id}-parent-permission;" class="form-control" placeholder="Parent Permission Received">
-               </div>
-             </div>
+              </div>
              <button id="${session._id}-new-student" onclick="DOMManager.addStudent('${session._id}')" class="btn btn-dark form-control">Add</button>
             </div>
            </div> 
@@ -165,8 +170,7 @@ class DOMManager{
                 <span id="first-name-${student._id}"><strong>First Name: </strong> ${student.firstName}</span>
                 <span id="last-name-${student._id}"><strong>Last Name: </strong> ${student.lastName}</span>
                 <span id="grade-level-${student._id}"><strong>Grade Level: </strong> ${student.gradeLevel}</span>
-                <span id="parent-permission-${student._id}"><strong>Parent Permission Received: </strong> ${student.parentPermission}</span>
-                <button class="btn btn-danger" onclick="DOMManager.deleteStudent('${session._id})', '${student._id}')">Delete Student</button>
+                <button class="btn btn-danger" onclick="DOMManager.deleteStudent('${session._id}', '${student._id}')">Delete Student</button>
                 </p>` //end template literal.
             ); //end append
         } //end for loop for students in session to be rendered
@@ -176,8 +180,8 @@ class DOMManager{
 }//end DOMManager class
 
 $('#create-new-session').click(()=>{
-  DOMManager.createSession($('#new-session-name').val());
-  $('new-session-name').val(''); //reset to empty after new session created
+  DOMManager.createSession($('#new-session-name').val(), $('#new-session-day').val(), $('#new-session-sizeLimit').val());
+  $('#new-session-name').val(''); //reset to empty after new session created
+  $('#new-session-day').val('');
+  $('#new-session-sizeLimit').val('');
 });
-
-//DOMManager.getAllSessions();
