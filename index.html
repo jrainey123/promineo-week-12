@@ -7,26 +7,49 @@
     <title>After School Enrichment Program</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
     <!--Bootstrap version 5.2.3-->
+    <!-- only 1 image (logo) used in this project so put the css styling here in the html -->
+    <style>
+      img {
+        border: 5px solid black;
+        position:absolute; top: 12pt; left: 46pt; bottom: 12pt; z-index: 100;
+      }
+      </style>
 </head>
-<h2 style="text-align:center">After School Enrichment Program</h2>
 <body class="container" style="background-image:linear-gradient(lightblue, white, lightgreen)"> <!--  Bootstrap class -->
-  
-  <div id="new-session" class="container mt-4 p-5 bg-success text-white rounded"> <!--setting up form for adding New Sessions. id assigned for future reference in JS code. class for styling is from Bootstrap. I tried Jumbotron but it's no longer used in Version 5. Alternative works great as well.-->
-    <h2>New Session</h2>
+  <div class="row">
+    <div class="col-sm">
+      <img height="150px" src="logo.PNG">
+      <h2 style="text-align:center">After School Enrichment Program</h2>
+    </div>
+  </div>
+<div id="new-session" class="container mt-4 p-5 bg-success text-white rounded"> <!--setting up form for adding New Sessions. id assigned for future reference in JS code. class for styling is from Bootstrap. I tried Jumbotron but it's no longer used in Version 5. Alternative works great as well.-->
+    <h1>New Session</h1>
     <div class="card">
       <div class="row">
        <div class="col-sm">
+        <br>
         <input type="text" id="new-session-name" class="form-control" placeholder="Session Name">
        </div>
        <div class="col-sm">
-        <input type="text" id="new-session-day" class="form-control" placeholder="Session Day">
-      </div>
-       <div class="col-sm">
+        <br>
         <input type="text" id="new-session-sizeLimit" class="form-control" placeholder="Session Size Limit">
        </div>
-      </div>
-    </div>
-  <button id="create-new-session" class="btn btn-dark form-control">Create</button> <!--2 classes used here no commas-->
+       <div class="col-sm"> 
+        <h6 style="color:black">Session Day (select one)</h6>
+        <select type="dropdown-menu" class="caret" id="new-session-day" class="form-control">
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        </select>
+       </div>
+       <!--I wanted to try dropdowns so I replaced the code in comment below with code above for Session Day. I used the Bootstrap dropdown-menu with select for input.-->
+       <!-- <div class="col-sm">
+        <input type="text" id="new-session-day" class="form-control" placeholder="Session Day">
+       </div> -->
+     </div>
+   </div>
+    <button id="create-new-session" class="btn btn-dark form-control">Create</button> <!--2 classes used here no commas-->
   </div> 
 
   <div id="app"> <!--In JS will store all the new sessions from API-->

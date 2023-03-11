@@ -1,4 +1,3 @@
-
 //Week 12 Coding Assignment
 // [x] Create a full CRUD application of your choice using either an API or local Array.
 // [x] Use an existing API with AJAX to interact with it. 
@@ -33,10 +32,11 @@ class Student{
     }
 } //end Student class
 
-//create the Service - how to send the http requests.
+//create the Service - how to send the http requests.  Using MockAPI.
+//static methods belong to the class rather than an instance of that class. An instance is not needed to call such static methods. Static methods are called on the class directly.
 class SessionService{
     static url='https://640486a73bdc59fa8f3ad6f4.mockapi.io/School_Sessions_API/sessions';
-    
+    //returns included so methods can be reused and handle the promises that come back. Useful in larger applications.
     static getAllSessions() {
         return $.get(this.url); //jquery GET = Read (C R U D)
     }
@@ -71,12 +71,12 @@ class SessionService{
 class DOMManager{
   static sessions;  
 
-  static getAllSessions(){ //from above calls the getAllSessions method inside the class SessionService
-    //returns a Promise so use .then for data we get back from service and rerenders the DOM.
+  static getAllSessions(){ //from above calls the getAllSessions method inside the class SessionService, an asynchronous task. 
+    //returns a Promise so use .then() method for data we get back from service and rerenders the DOM.
     SessionService.getAllSessions().then(sessions => this.render(sessions));
   }
 
-//sends request to create session and return the updated all sessions data. then render all the sessions with the updated data.
+//sends request to create session and return the updated all sessions data. Then render all the sessions with the updated data.
 
   static createSession(name, day, sizeLimit){
     SessionService.createSession(new Session(name, day, sizeLimit))
@@ -86,7 +86,7 @@ class DOMManager{
         .then((sessions) => this.render(sessions));
   }
 
-  //sends request to delete session and return the updated all sessions data. then render all the sessions with the upated data.
+  //sends request to delete session and return the updated all sessions data. Then render all the sessions with the upated data.
 
   static deleteSession(id){
     SessionService.deleteSession(id)
@@ -100,14 +100,14 @@ class DOMManager{
     for (let session of this.sessions){
       console.log(this.sessions);
       console.log(session);
-        if (session._id == id) {
-            session.students.push(new Student($(`#${session._id}-first-name`).val(), $(`#${session._id}-last-name`).val(), $(`#${session._id}-grade-level`).val()));
-            console.log(session.students);
-            SessionService.updateSession(session)
-            .then(()=> {
-                return SessionService.getAllSessions();
-            })
-            .then((sessions)=> this.render(sessions));     
+      if(session._id==id){
+      session.students.push(new Student($(`#${session._id}-first-name`).val(), $(`#${session._id}-last-name`).val(), $(`#${session._id}-grade-level`).val()));
+      console.log(session.students);
+      SessionService.updateSession(session)
+        .then(()=> {
+        return SessionService.getAllSessions();
+        })
+        .then((sessions)=> this.render(sessions));     
      }
     } 
   }
@@ -131,46 +131,54 @@ class DOMManager{
     }//end static
  
   static render(sessions){
+    //let selectMenuOptions=document.querySelector(".form-select"); DELETE
+    //console.log(selectMenuOptions); DELETE
     this.sessions=sessions;
-    $('#app').empty(); //finds the app id in html . empty clears every time before app is rerendered.
+    $('#app').empty(); //using jquery $('') empty() method. finds the app id in html . empty clears every time before app is rerendered.
     for (let session of sessions) { //for loop to render each session
       console.log(session); //for troubleshooting. not needed for app to function.
         $('#app').prepend( //use prepend so newest one shows up on top
         //write html in javascript. use template literal ``
-        //div card body for inputs of students in a session 
+        //div card-body for Form Inputs of students in a session. Using Bootstrap and CSS to Style. 
         `<div id="${session._id}" class="card">
             <div class="card-header">
-             <h2>${session.name} on ${session.day} - Size Limit: ${session.sizeLimit}</h2>  
-             <button class="btn btn-danger" onclick="DOMManager.deleteSession('${session._id}')">Delete</button> 
+             <h4>${session.name} on ${session.day} - Size Limit: ${session.sizeLimit}</h4>  
+             <button class="btn btn-warning" onclick="DOMManager.deleteSession('${session._id}')">Delete</button> 
             </div>
             <div class="card-body">
              <div class="card">
               <div class="row">
                <div class="col-sm">
-                <input type="text" id="${session._id}-first-name" class="form-control" placeholder="Student First Name">
+               <br> 
+               <input type="text" id="${session._id}-first-name" class="form-control" placeholder="Student First Name">
                </div>
                <div class="col-sm">
+               <br>
                 <input type="text" id="${session._id}-last-name" class="form-control" placeholder="Student Last Name">
                </div>
                <div class="col-sm">
-                <input type="text" id="${session._id}-grade-level" class="form-control" placeholder="Student Grade Level">
+               <h6>Student Grade Level (select one)</h6>
+               <select type="dropdown-menu" class="caret" id="${session._id}-grade-level" class="form-control">
+               <option value="3rd Grade">3rd Grade</option>
+               <option value="4th Grade">4th Grade</option>
+               <option value="5th Grade">5th Grade</option>
+               </select>
                </div>
               </div>
              <button id="${session._id}-new-student" onclick="DOMManager.addStudent('${session._id}')" class="btn btn-dark form-control">Add</button>
             </div>
            </div> 
         </div><br>`//end template literal
-        
         );  //end prepend
 
         //nested for loop for students in session to render
         for (let student of session.students){
-            $(`#${session._id}`).find('.card-body').append(
+          console.log(session); //for troubleshooting. not needed for app to function.
+            $(`#${session._id}`).find('.card-body').append( //jquery $() will get the element by the id in the template literal and find() the style element to append to.
               `<p>
-                <span id="first-name-${student._id}"><strong>First Name: </strong> ${student.firstName}</span>
-                <span id="last-name-${student._id}"><strong>Last Name: </strong> ${student.lastName}</span>
+                <span id="first-name-${student._id}"><strong>Student Name: </strong> ${student.firstName} ${student.lastName}</span>
                 <span id="grade-level-${student._id}"><strong>Grade Level: </strong> ${student.gradeLevel}</span>
-                <button class="btn btn-danger" onclick="DOMManager.deleteStudent('${session._id}', '${student._id}')">Delete Student</button>
+                <button class="btn btn-warning" onclick="DOMManager.deleteStudent('${session._id}', '${student._id}')">Delete Student</button>
                 </p>` //end template literal.
             ); //end append
         } //end for loop for students in session to be rendered
@@ -185,3 +193,4 @@ $('#create-new-session').click(()=>{
   $('#new-session-day').val('');
   $('#new-session-sizeLimit').val('');
 });
+//END
