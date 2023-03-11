@@ -131,8 +131,6 @@ class DOMManager{
     }//end static
  
   static render(sessions){
-    //let selectMenuOptions=document.querySelector(".form-select"); DELETE
-    //console.log(selectMenuOptions); DELETE
     this.sessions=sessions;
     $('#app').empty(); //using jquery $('') empty() method. finds the app id in html . empty clears every time before app is rerendered.
     for (let session of sessions) { //for loop to render each session
